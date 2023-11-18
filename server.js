@@ -13,6 +13,8 @@ admin.initializeApp({
   credential: admin.credential.cert(credentials)
 });
 
+const db = admin.firestore();
+
 //body parser middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -32,17 +34,33 @@ app.post("/singup", async (req, res) => {
 })
 
 
-// Connect to MongoDB
-mongoose.connect('mongodb://localhost/my-database', { useNewUrlParser: true })
-  .then(() => console.log('MongoDB Connected'))
-  .catch(err => console.log(err));
+// // Connect to MongoDB
+// mongoose.connect('mongodb://localhost/my-database', { useNewUrlParser: true })
+//   .then(() => console.log('MongoDB Connected'))
+//   .catch(err => console.log(err));
 
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Server is running on port ${port}`));
+// const port = process.env.PORT || 3000;
+// app.listen(port, () => console.log(`Server is running on port ${port}`));
 
-app.get('', (req, res) => {
-  res.send("This is a REST API server for the Crack MBOSE Application");
-})
+// app.get('', (req, res) => {
+//   res.send("This is a REST API server for the Crack MBOSE Application");
+// })
+
+app.post("/create", async (req, res) => {
+  try {
+    const user = {
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      email: req.body.email,
+      username: req.body.username, 
+    };
+    const response = db.collection("users").doc(user.email).set(user);
+    res.send(response);
+  } catch(error) {
+    res.send(error);
+  }
+
+});
 
 app.use('/api/users', users);
